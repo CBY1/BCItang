@@ -16,6 +16,7 @@ from random import shuffle
 from BCIFunc import *
 from pygame_anchors import anchors as ANCH
 import time
+from camera import Camera
 
 txt = [chr(i+97) for i in range(26)]+[str(i) for i in range(10)]
 
@@ -48,7 +49,7 @@ class BciApplication(BciCore):
         # self.expset.subject_name = 'TJS'
         # self.expset.AMPon = False
 
-        self.init_screen((640,480))
+        self.init_screen((960,720))
         self.GUIsetup()
 
         self.signal = []
@@ -114,9 +115,10 @@ class BciApplication(BciCore):
                 self.resoff(self.res)
                 self.current_task = self.tasklist.pop()
                 self.prompton(self.current_task)
-                self.cube, self.codebook, self.codeindex = generate_cube_codebook((6,6),1)
+                self.cube, self.codebook, self.codeindex = generate_cube_codebook((6,6),3)
 
         elif phase == 'on':
+            self.stimuli['camera'].visible = True
             self.stimuli['welcome'].visible = False
 
             if self.codebook==[]:
@@ -131,6 +133,7 @@ class BciApplication(BciCore):
             [self.stimoff(d) for d in self.currentbook]
 
         elif phase == 'res':
+            self.stimuli['camera'].visible = False
             self.promptoff(self.current_task)
             self.res = self.getres()
             self.reson(self.res)
@@ -165,6 +168,8 @@ class BciApplication(BciCore):
                                            textcolor=(255,0,0),borderon=True,borderwidth=2)
 
         self.stimuli['welcome'].reset()
+        self.stimuli['camera']=Camera(self.screen,layer=-1,siz = (scrw,scrh),visible=False)
+
 
 if __name__ == '__main__':
     app = BciApplication()
